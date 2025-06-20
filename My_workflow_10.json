@@ -1,0 +1,500 @@
+{
+  "name": "My workflow 10",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -80
+      ],
+      "id": "31a3b9b0-e2f5-49a9-8cc9-d0a0164f3282",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "UniEd4GLODsDNGkU",
+          "name": "IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json[\"*ð¹ Company\"] }}{{ $json['*ð¹ Job Title'] }}{{ $json['*ð¹ Job Location'] }}{{ $json['*ð¹ Mode of Work'] }}{{ $json['*ð Job Description'] }}{{ $json['*â Eligibility Criteria'] }}{{ $json['*Courses Eligible'] }}{{ $json['*Batch'] }}{{ $json['*Minimum CGPA'] }}{{ $json['*Additional Skills'] }}{{ $json['*Last Date to Apply'] }}{{ $json['*Online Test Date'] }}{{ $json['*ð¥ How to Apply'] }}{{ $json['ð Apply Now <https'] }}.update the output in google sheet connected in tool",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        -20
+      ],
+      "id": "cbda14a9-4a4f-4418-80fb-14e8f7f7f3da",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        260
+      ],
+      "id": "0f0dbbbe-751b-4028-8797-706402d5711a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SJrSpPd9NfeHluKo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emails = $input.all();\n\nconst parsedEmails = emails.map((email) => {\n  const text = email.json.textPlain;\n  const lines = text.split(\"\\n\");\n  const parsedData = {};\n\n  lines.forEach((line) => {\n    if (line.includes(\":\")) {\n      const [key, value] = line.split(\":\");\n      parsedData[key.trim()] = value.trim();\n    }\n  });\n\n  return { json: parsedData };\n});\n\nreturn parsedEmails;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        -40
+      ],
+      "id": "51270f62-971c-4eab-b744-2a65a83e0865",
+      "name": "Code1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ",
+          "mode": "list",
+          "cachedResultName": "New Data from IMAP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "Company": "={{ $('Code1').item.json[\"*ð¹ Company\"] }}",
+            "Job Title": "={{ $('Code1').item.json[\"*ð¹ Job Title\"] }}",
+            "Job Location": "={{ $('Code1').item.json[\"*ð¹ Job Location\"] }}",
+            "Mode of work": "={{ $('Code1').item.json[\"*ð¹ Mode of Work\"] }}",
+            "Eligiblity Criteria": "={{ $('Code1').item.json[\"*â Eligibility Criteria\"] }}",
+            "Courses Eligible Batch": "={{ $('Code1').item.json[\"*Courses Eligible\"] }}",
+            "Minimum CGPA": "={{ $('Code1').item.json[\"*Minimum CGPA\"] }}",
+            "Addtional Skills": "={{ $('Code1').item.json[\"*Additional Skills\"] }}",
+            "Last Date to Apply": "={{ $('Code1').item.json[\"*Last Date to Apply\"] }}",
+            "Online Test Date": "={{ $('Code1').item.json[\"*Online Test Date\"] }}",
+            "Interview Rounds": "={{ $('Code1').item.json[\"*Interview Rounds\"] }}",
+            "How to apply": "={{ $('Code1').item.json[\"*ð¥ How to Apply\"] }}",
+            "Apply Link": "={{ $('Code1').item.json[\"ð Apply Now <https\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Location",
+              "displayName": "Job Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Mode of work",
+              "displayName": "Mode of work",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Eligiblity Criteria",
+              "displayName": "Eligiblity Criteria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Courses Eligible Batch",
+              "displayName": "Courses Eligible Batch",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Minimum CGPA",
+              "displayName": "Minimum CGPA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Addtional Skills",
+              "displayName": "Addtional Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Date to Apply",
+              "displayName": "Last Date to Apply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Online Test Date",
+              "displayName": "Online Test Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Interview Rounds",
+              "displayName": "Interview Rounds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "How to apply",
+              "displayName": "How to apply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Apply Link",
+              "displayName": "Apply Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        140,
+        280
+      ],
+      "id": "514ee831-13c9-457c-aae8-c9dec1b6d1f7",
+      "name": "Google Sheets",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t1Z9gVYF08UtioJN",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Act as a data analayst , i have a set of job description where they are searching for the student that satisfy their Cgpa , now i have a set of student result with their cgpa , your task is to use the below attached sheets tool , where there is a student list , check the cgpa of the each user analyse their cgpa andAct as a data analayst , i have a set of job description where they are searching for the student that satisfy their Cgpa , now i have a set of student result with their cgpa , your task is to use the below attached sheets tool , where there is a student list , check the cgpa of the each user analyse their cgpa and check whether they are suitable for the specific job and return only the eligible student based on the cgpa criteria satisfication return only the student list containing data only name,email,\tbranch,degree\n\nthis is the job details \ncompany name : {{ $json.Company }}\njob title: {{ $json['Job Title'] }}\njob location :{{ $json['Job Location'] }}\nminimum cgpa : \n {{ $json['Minimum CGPA'] }} check whether they are suitable for the specific job and return only the eligible student based on the cgpa criteria satisfication return only the student list \n\nthis is the job details \ncompany name : {{ $json.Company }}\njob title: {{ $json['Job Title'] }}\njob location :{{ $json['Job Location'] }}\nminimum cgpa : \n {{ $json['Minimum CGPA'] }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        820,
+        0
+      ],
+      "id": "c30c8c68-9817-44cf-847f-ddc01e710f2a",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        780,
+        220
+      ],
+      "id": "a61df87d-12f4-45b0-a309-68b8612ea9d5",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SJrSpPd9NfeHluKo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ",
+          "mode": "list",
+          "cachedResultName": "New Data from IMAP",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ppO3IkdPS4TPPlTXYoQNdM0YkU9Y-baaxDO0wjVYCbQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        480,
+        -20
+      ],
+      "id": "fd72ca29-43b1-4761-a013-2e38795f5e6c",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t1Z9gVYF08UtioJN",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1XFJ-1847E6FV566xArh13C76Fb7R1oGR6utWaflHAZQ",
+          "mode": "list",
+          "cachedResultName": "Student Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XFJ-1847E6FV566xArh13C76Fb7R1oGR6utWaflHAZQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XFJ-1847E6FV566xArh13C76Fb7R1oGR6utWaflHAZQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        960,
+        260
+      ],
+      "id": "e74ef315-1175-445e-92c9-ce7018f60584",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t1Z9gVYF08UtioJN",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "po.iipc@snsgroups.com",
+        "subject": "Placement Opportunities ",
+        "message": "=test {{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "a4c22a4e-9734-4e70-bb3c-2afa6ceec873",
+      "name": "Gmail",
+      "webhookId": "085b3742-cf07-476a-97c1-5cd88b186aab",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "2zcKyT3llSQcmz3T",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "94e766aa-f0db-4fb9-8577-8b1165edbee0",
+  "meta": {
+    "instanceId": "36a9b8ce7ec3bc398d3bbc80cd44880c90b79d975a84120251fe63376cb940b1"
+  },
+  "id": "vpUSvvDo1uxK5k12",
+  "tags": []
+}
